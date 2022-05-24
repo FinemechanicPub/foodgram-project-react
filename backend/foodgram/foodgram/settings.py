@@ -133,3 +133,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+RECIPES = {
+    'TEXT_DISPLAY_LENGTH': 15
+}
