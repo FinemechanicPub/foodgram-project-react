@@ -57,10 +57,6 @@ class Tag(models.Model):
         return cut_text_display(self.name)
 
 
-
-
-
-
 class Recipe(models.Model):
     "Рецепт"
     name = models.CharField('название', max_length=200)
@@ -95,7 +91,11 @@ class Recipe(models.Model):
 class RecipeIngredient(models.Model):
     """Ингредиент в составе рецепта"""
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingredient = models.ForeignKey(Ingredient, verbose_name='ингредиент', on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient,
+        verbose_name='ингредиент',
+        on_delete=models.CASCADE
+    )
     amount = models.PositiveSmallIntegerField(
         'количество',
         validators=(MinValueValidator(1, 'не меньше 1'),)
