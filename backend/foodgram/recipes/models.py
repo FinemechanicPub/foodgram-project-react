@@ -28,7 +28,7 @@ class Unit(models.Model):
 class Ingredient(models.Model):
     """Ингрeдиент"""
     name = models.CharField('название', max_length=200)
-    units = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    measurement_unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
 
     class Meta:
         default_related_name = 'ingredients'
@@ -36,7 +36,7 @@ class Ingredient(models.Model):
         verbose_name_plural = 'ингредиенты'
 
     def __str__(self) -> str:
-        return cut_text_display(f'{self.name}, {self.units}')
+        return cut_text_display(f'{self.name}, {self.measurement_unit}')
 
 
 class Tag(models.Model):
