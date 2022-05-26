@@ -145,6 +145,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5
 }
 
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'LOGIN_FIELD': 'email'
+}
+
 RECIPES = {
     'TEXT_DISPLAY_LENGTH': 30
 }
