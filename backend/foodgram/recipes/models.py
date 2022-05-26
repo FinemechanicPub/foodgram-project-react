@@ -94,9 +94,14 @@ class Recipe(models.Model):
 
 class RecipeIngredient(models.Model):
     """Ингредиент в составе рецепта"""
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='recipe_to_ingredients',
+        on_delete=models.CASCADE
+        )
     ingredient = models.ForeignKey(
         Ingredient,
+        related_name='ingredient_to_recipes',
         verbose_name='ингредиент',
         on_delete=models.CASCADE
     )
@@ -108,3 +113,9 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = 'ингредиент'
         verbose_name_plural = 'состав'
+    
+    def __str__(self) -> str:
+        return (
+            f'"{self.ingredient}" входит в "{self.recipe}" '
+            f'в количестве {self.amount}'
+        )
