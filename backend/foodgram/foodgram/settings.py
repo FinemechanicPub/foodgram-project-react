@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'users',
-    'recipes'
+    'recipes',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -135,7 +136,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
         'rest_framework.permissions.AllowAny'
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5
 }
 
 RECIPES = {
