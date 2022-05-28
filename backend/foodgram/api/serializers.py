@@ -17,6 +17,7 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
+        read_only_fields = ('name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -28,21 +29,25 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
+        read_only_fields = ('name',)
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
 
-    ingredient = IngredientSerializer()    
+
+    #ingredient = IngredientSerializer()
 
     class Meta:
         model = RecipeIngredient
-        fields = ('ingredient', 'amount')
+        fields = ('ingredient', 'amount', 'ingredient_id')
+        read_only_fields = ('ingredient',)
     
+    # При отображении запрашивать вложенный сериализатор
+    # и дополнять ответ его данными без вложенности
     def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        ingredient = representation.pop('ingredient')
-        ingredient.update(representation)
-        return ingredient
+        representation = IngredientSerializer(instance.ingredient).data
+        representation.update({'amount': instance.amount})
+        return representation
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -51,10 +56,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
-    tags = TagSerializer(many=True)
     ingredients = RecipeIngredientSerializer(
         many=True,
-        read_only=True,
         source='recipe_to_ingredients'
     )
     image = DecodingImageField()
@@ -65,5 +68,20 @@ class RecipeSerializer(serializers.ModelSerializer):
             'id', 'tags', 'author', 'ingredients',
             'name', 'image', 'text', 'cooking_time'
         )
-
+    
+    # При отображении запрашивать вложенный сериализатор
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['tags'] = TagSerializer(instance.tags, many=True).data
+        return representation
+    
+    def create(self, validated_data):
+        print('Validated_data: ', validated_data)
+        ingredients = validated_data.pop('recipe_to_ingredients')
+        tags = validated_data.pop('tags')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        for ingredient in ingredients:
+            RecipeIngredient.objects.create(recipe=recipe, **ingredient)
+        return recipe
         
