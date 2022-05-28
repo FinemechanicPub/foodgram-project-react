@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
+from .fields import DecodingImageField
+
 User = get_user_model()
 
 
@@ -29,7 +31,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    
+
     ingredient = IngredientSerializer()    
 
     class Meta:
@@ -55,6 +57,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only=True,
         source='recipe_to_ingredients'
     )
+    image = DecodingImageField()
 
     class Meta:
         model = Recipe
