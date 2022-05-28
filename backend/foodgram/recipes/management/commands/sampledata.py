@@ -68,7 +68,7 @@ class Command(BaseCommand):
                 instance.save()
 
     MODELS = {
-        Ingredient: ('ingredients', {'units': 'notation'})
+        Ingredient: ('ingredients', {'measurement_unit': 'notation'})
     }
 
     @transaction.atomic
