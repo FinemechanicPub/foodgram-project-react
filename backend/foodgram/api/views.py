@@ -2,7 +2,7 @@ from django_filters import rest_framework as filters
 from rest_framework import pagination, viewsets
 from recipes.models import Ingredient, Recipe, Tag
 
-from .filters import IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 from .pagination import RecipePagination
 from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 
@@ -23,6 +23,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = RecipePagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
