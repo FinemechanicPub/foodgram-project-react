@@ -91,6 +91,5 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.recipe_to_ingredients.all().delete()
         for item in recipe_items:
             instance.recipe_to_ingredients.create(**item)
-        instance.save()
         return instance
         
