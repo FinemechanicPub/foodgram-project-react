@@ -137,3 +137,12 @@ class ShoppingCart(RecipeList):
 
     def __str__(self) -> str:
         return f'{self.recipe} в корзине у {self.user}'
+
+
+class Favorite(RecipeList):
+    """Список покупок пользователя"""
+    class Meta(RecipeList.Meta):
+        default_related_name = 'favorites'
+
+    def __str__(self) -> str:
+        return f'{self.recipe} в избранном у {self.user}'
