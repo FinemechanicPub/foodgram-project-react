@@ -20,7 +20,14 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    queryset = (
+        Recipe.objects.all()
+        .select_related('author')
+        .prefetch_related('tags')
+        .prefetch_related(
+            'recipe_to_ingredients__ingredient__measurement_unit'
+        )
+    )
     serializer_class = RecipeSerializer
     pagination_class = RecipePagination
     filter_backends = (filters.DjangoFilterBackend,)
