@@ -24,3 +24,17 @@ class WebUser(AbstractUser):
     )
 
 
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(
+        WebUser,
+        on_delete=models.CASCADE,
+        related_name='subscribers'
+    )
+    author = models.ForeignKey(
+        WebUser,
+        on_delete=models.CASCADE,
+        related_name='authors'
+    )
+
+    def __str__(self) -> str:
+        return f'{self.subscriber} подписан на {self.author}'
