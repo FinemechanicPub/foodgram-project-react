@@ -1,6 +1,7 @@
+from django.db.models import OuterRef, Exists, Value, IntegerField
 from django_filters import rest_framework as filters
 from rest_framework import pagination, viewsets
-from recipes.models import Ingredient, Recipe, Tag
+from recipes.models import Ingredient, Recipe, ShoppingCart, Tag
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import RecipePagination
@@ -32,6 +33,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = RecipePagination
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = RecipeFilter
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return self.queryset.annotate(is_in_shopping_cart=Exists(
+                ShoppingCart.objects.filter(
+                    recipe=OuterRef('pk'),
+                    user=self.request.user
+                )
+            ))
+        return self.queryset.annotate(
+            is_in_shopping_cart=Value(0, IntegerField())
+        )
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

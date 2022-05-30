@@ -119,3 +119,21 @@ class RecipeIngredient(models.Model):
             f'"{self.ingredient}" входит в "{self.recipe}" '
             f'в количестве {self.amount}'
         )
+
+
+class RecipeList(models.Model):
+    """Абстрактная модель списка рецептов пользователя"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True        
+
+
+class ShoppingCart(RecipeList):
+    """Список покупок пользователя"""
+    class Meta(RecipeList.Meta):
+        default_related_name = 'cart'
+
+    def __str__(self) -> str:
+        return f'{self.recipe} в корзине у {self.user}'
