@@ -115,13 +115,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class ShoppingCartSerialzier(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    recipe = serializers.HiddenField(default=CurrentRecipeDefault())
-    id = serializers.SlugRelatedField('id', source='recipe', read_only=True)
-    name = serializers.SlugRelatedField('name', source='recipe', read_only=True)
-    image = ImageRelatedField('image', source='recipe', read_only=True)
-    cooking_time = serializers.SlugRelatedField('cooking_time', source='recipe', read_only=True)
+    recipe = serializers.HiddenField(default=CurrentRecipeDefault())    
     
     class Meta:
         model = ShoppingCart
-        fields = ('id', 'user', 'recipe', 'name', 'image', 'cooking_time')
+        fields = ('user', 'recipe')
         
