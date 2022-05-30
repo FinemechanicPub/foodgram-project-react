@@ -32,3 +32,11 @@ class DecodingImageField(serializers.ImageField):
                 f'Некорректный формат файла: {error}'
             )
         return super().to_internal_value(data)
+
+
+class ImageRelatedField(serializers.SlugRelatedField):
+    """Поле для преобразования поля изображения в его URL"""
+    def to_representation(self, value):
+        image = super().to_representation(value)
+        return image.url
+        
