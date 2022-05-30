@@ -11,6 +11,8 @@ class IngredientFilter(filter.FilterSet):
 
 class RecipeFilter(filter.FilterSet):
     author = filter.NumberFilter(lookup_expr='exact', field_name='author__id')
+    is_in_shopping_cart = filter.BooleanFilter()
+    is_favorited = filter.BooleanFilter()
     tags = filter.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
         to_field_name='slug',
