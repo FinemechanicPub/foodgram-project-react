@@ -1,8 +1,7 @@
-from django.db.models import OuterRef, Exists, Value, IntegerField
+from django.db.models import OuterRef, Exists, Value, BooleanField
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from requests import request
-from rest_framework import pagination, viewsets, decorators, exceptions, response, status
+from rest_framework import viewsets, decorators, exceptions, response, status
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 
 from .filters import IngredientFilter, RecipeFilter
@@ -53,8 +52,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
             )
         return self.queryset.annotate(
-            is_in_shopping_cart=Value(0, IntegerField()),
-            is_favorited=Value(0, IntegerField())
+            is_in_shopping_cart=Value(0, BooleanField()),
+            is_favorited=Value(0, BooleanField())
         )
 
     def perform_create(self, serializer):
