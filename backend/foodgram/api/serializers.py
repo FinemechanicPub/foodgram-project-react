@@ -1,7 +1,7 @@
 from email.policy import default
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from recipes.models import Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
+from recipes.models import Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
 
 from .fields import DecodingImageField, ImageRelatedField
 
@@ -124,4 +124,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class ShoppingCartSerialzier(RecipeListSerializer):
     class Meta(RecipeListSerializer.Meta):
         model = ShoppingCart
+
+
+class FavoritesSerializer(RecipeListSerializer):
+    class Meta(RecipeListSerializer.Meta):
+        model = Favorite
         

@@ -6,7 +6,7 @@ from recipes.models import Ingredient, Recipe, ShoppingCart, Tag
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import RecipePagination
-from .serializers import IngredientSerializer, RecipeSerializer, RecipeShortSerializer, ShoppingCartSerialzier, TagSerializer
+from .serializers import FavoritesSerializer, IngredientSerializer, RecipeSerializer, RecipeShortSerializer, ShoppingCartSerialzier, TagSerializer
 
 
 class TagViewset(viewsets.ReadOnlyModelViewSet):
@@ -81,5 +81,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             pk,
             ShoppingCartSerialzier
         )
-        
+    
+    @decorators.action(detail=True, methods=['POST', 'DELETE'])
+    def favorite(self, request, pk=None):        
+        return self._recipe_list_action(
+            request,
+            pk,
+            FavoritesSerializer
+        )
         
