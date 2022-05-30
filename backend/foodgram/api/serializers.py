@@ -113,11 +113,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ShoppingCartSerialzier(serializers.ModelSerializer):
+class RecipeListSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     recipe = serializers.HiddenField(default=CurrentRecipeDefault())    
     
     class Meta:
-        model = ShoppingCart
         fields = ('user', 'recipe')
+
+
+class ShoppingCartSerialzier(RecipeListSerializer):
+    class Meta(RecipeListSerializer.Meta):
+        model = ShoppingCart
         
