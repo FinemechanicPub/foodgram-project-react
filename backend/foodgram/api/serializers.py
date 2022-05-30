@@ -80,12 +80,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True,
         source = 'recipe_to_ingredients'
     )
-    is_in_shopping_cart = serializers.IntegerField(read_only=True)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True)
+    is_favorited = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'author', 'is_in_shopping_cart',
+            'id', 'tags', 'author', 'is_in_shopping_cart', 'is_favorited',
             'ingredients', 'name', 'image', 'text', 'cooking_time'
         )
     
