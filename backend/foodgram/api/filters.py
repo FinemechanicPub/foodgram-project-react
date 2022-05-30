@@ -1,4 +1,3 @@
-from django import forms
 from django_filters import rest_framework as filter
 from recipes.models import Ingredient, Recipe, Tag
 
@@ -8,10 +7,6 @@ class IngredientFilter(filter.FilterSet):
 
     class Meta:
         Model = Ingredient
-
-
-class MultipleCharFilter(filter.MultipleChoiceFilter):
-    field_class = forms.CharField
 
 
 class RecipeFilter(filter.FilterSet):
