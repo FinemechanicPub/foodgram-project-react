@@ -1,10 +1,22 @@
+from email.policy import default
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+from recipes.models import Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
 
-from .fields import DecodingImageField
+from .fields import DecodingImageField, ImageRelatedField
 
 User = get_user_model()
+
+
+class CurrentRecipeDefault:
+    requires_context = True
+
+    def __call__(self, serializer_field):
+        print('Context: ', serializer_field.context)
+        return (
+            serializer_field.context.get('request')
+            .parser_context.get('kwargs').get('recipe_id')
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,6 +63,12 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
+class RecipeShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
 class RecipeSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(
@@ -93,4 +111,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         for item in recipe_items:
             instance.recipe_to_ingredients.create(**item)
         return instance
+
+
+class ShoppingCartSerialzier(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    recipe = serializers.HiddenField(default=CurrentRecipeDefault())
+    id = serializers.SlugRelatedField('id', source='recipe', read_only=True)
+    name = serializers.SlugRelatedField('name', source='recipe', read_only=True)
+    image = ImageRelatedField('image', source='recipe', read_only=True)
+    cooking_time = serializers.SlugRelatedField('cooking_time', source='recipe', read_only=True)
+    
+    class Meta:
+        model = ShoppingCart
+        fields = ('id', 'user', 'recipe', 'name', 'image', 'cooking_time')
         
