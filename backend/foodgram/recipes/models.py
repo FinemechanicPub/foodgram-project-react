@@ -1,4 +1,3 @@
-from tabnanny import verbose
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -113,7 +112,7 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = 'ингредиент'
         verbose_name_plural = 'состав'
-    
+
     def __str__(self) -> str:
         return (
             f'"{self.ingredient}" входит в "{self.recipe}" '
@@ -127,7 +126,7 @@ class RecipeList(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
     class Meta:
-        abstract = True        
+        abstract = True
 
 
 class ShoppingCart(RecipeList):
