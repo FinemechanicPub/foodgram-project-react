@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.forms import TextInput
 
-from .models import Recipe, Ingredient, Unit, Tag
+from .models import Recipe, Ingredient, Tag
 
 
 class IngredientInline(admin.TabularInline):
@@ -13,6 +13,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'cooking_time')
     exclude = ('ingredients',)
     inlines = (IngredientInline,)
+
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
