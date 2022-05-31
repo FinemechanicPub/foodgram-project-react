@@ -1,6 +1,5 @@
 """Дополнительные поля для сериализаторов"""
 import base64
-from distutils.log import error
 
 from django.core.files.base import ContentFile
 from rest_framework import serializers
@@ -39,4 +38,3 @@ class ImageRelatedField(serializers.SlugRelatedField):
     def to_representation(self, value):
         image = super().to_representation(value)
         return image.url
-        
