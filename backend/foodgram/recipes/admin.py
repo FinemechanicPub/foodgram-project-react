@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.forms import TextInput
 
-from .models import Recipe, Ingredient, Tag
+from .models import Recipe, Ingredient, ShoppingCart, Tag
 
 
 class IngredientInline(admin.TabularInline):
@@ -27,3 +27,8 @@ class TagAdmin(admin.ModelAdmin):
     widgets = {
             'color': TextInput(attrs={'type': 'color'}),
         }
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
