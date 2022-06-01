@@ -1,8 +1,10 @@
 from django.db.models import OuterRef, Exists, Value, BooleanField
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, decorators, exceptions, response, status
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.services import ShoppingList
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import RecipePagination
@@ -98,4 +100,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             pk,
             FavoritesSerializer
         )
+    
+    @decorators.action(detail=False, methods=['GET'])
+    def download_shopping_cart(self, request):
+        shopping_list = ShoppingList(request.user)
+        return FileResponse(shopping_list.as_txt('my_shopping_list'), as_attachment=True)
         
