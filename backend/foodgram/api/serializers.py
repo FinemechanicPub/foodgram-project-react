@@ -9,6 +9,7 @@ User = get_user_model()
 
 
 class CurrentRecipeDefault:
+    """Значение по умолчания для рецепта, извлекаемое из URL"""
     requires_context = True
 
     def __call__(self, serializer_field):
@@ -20,12 +21,14 @@ class CurrentRecipeDefault:
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор пользователя"""
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name')
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """"Сериализатор тегов"""
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
@@ -33,7 +36,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-
+    """Сериализатор ингредиента"""
     measurement_unit = serializers.SlugRelatedField(
         'notation', read_only=True
     )
@@ -45,7 +48,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-
+    """Сериализатор списка ингредиентов рецепта"""
     class Meta:
         model = RecipeIngredient
         fields = ('ingredient', 'amount')
@@ -53,24 +56,27 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     # При отображении запрашивать вложенный сериализатор
     # и дополнять ответ его данными без вложенности
     def to_representation(self, instance):
+        """Генератор представления с уплощением структуры ответа"""
         representation = IngredientSerializer(instance.ingredient).data
         representation.update({'amount': instance.amount})
         return representation
     
     # Приведение данных к форме модели
     def to_internal_value(self, data):
+        """Генератор внутреннего представления с заменой имени поля"""
         data['ingredient'] =  data.pop('id')
         return super().to_internal_value(data)
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
+    """Краткая форма сериализатора рецептов"""
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-
+    """Развернутая форма сериализатора рецептов"""
     author = UserSerializer(
         read_only=True,
         default=serializers.CurrentUserDefault()
@@ -92,11 +98,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     
     # При отображении запрашивать вложенный сериализатор тегов
     def to_representation(self, instance):
+        """Генератор представления с развернутым отображением тегов"""
         representation = super().to_representation(instance)
         representation['tags'] = TagSerializer(instance.tags, many=True).data
         return representation
     
     def create(self, validated_data):
+        """Создание записи с обработкой вложенных данных по ингредиентам"""
         # print('Validated_data: ', validated_data)
         recipe_items = validated_data.pop('recipe_to_ingredients')
         recipe = super().create(validated_data)
@@ -105,6 +113,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
     
     def update(self, instance, validated_data):
+        """Обновление записи с обработкой вложенных данных по ингредиентам"""
         # print('Validated_data (update): ', validated_data)
         recipe_items = validated_data.pop('recipe_to_ingredients')
         instance = super().update(instance, validated_data)
@@ -115,6 +124,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
+    """Базовый сериализатор добавления рецепта к списку рецептов"""
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     recipe = serializers.HiddenField(default=CurrentRecipeDefault())    
     
@@ -123,11 +133,13 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerialzier(RecipeListSerializer):
+    """Сериализатор добавления рецепта к списку покупок"""
     class Meta(RecipeListSerializer.Meta):
         model = ShoppingCart
 
 
 class FavoritesSerializer(RecipeListSerializer):
+    """"Сериализатор добавления рецепта к списку избранного"""
     class Meta(RecipeListSerializer.Meta):
         model = Favorite
         
