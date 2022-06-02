@@ -2,10 +2,25 @@ from email.policy import default
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from recipes.models import Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
+from users.models import Subscription
 
-from .fields import DecodingImageField, ImageRelatedField
+from .fields import DecodingImageField
 
 User = get_user_model()
+
+
+class URLParameter():
+    """Значение по умолчанию из параметров URL"""
+    requires_context = True
+
+    def __init__(self, field_name):
+        self.field_name = field_name
+
+    def __call__(self, serializer_field):        
+        return (
+            serializer_field.context.get('request')
+            .parser_context.get('kwargs').get(self.field_name)
+        )
 
 
 class CurrentRecipeDefault:
@@ -18,13 +33,19 @@ class CurrentRecipeDefault:
             serializer_field.context.get('request')
             .parser_context.get('kwargs').get('recipe_id')
         )
-
+     
 
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор пользователя"""
+    is_subscribed = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name')
+        fields = (
+            'email', 'id', 'username',
+            'first_name', 'last_name', 'is_subscribed'
+        )
+        
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -143,3 +164,32 @@ class FavoritesSerializer(RecipeListSerializer):
     class Meta(RecipeListSerializer.Meta):
         model = Favorite
         
+
+class UserRecipeSerializer(UserSerializer):
+    """Сериализатор пользователя и его рецептов"""
+    recipes = serializers.SerializerMethodField(read_only=True)
+    recipe_count = serializers.IntegerField(read_only=True)
+
+    def get_recipes(self, obj):
+        recipes_limit = int(
+            self.context.get('request').query_params.get('recipes_limit', 0)
+        )
+        print('Recipes limit:', recipes_limit)
+        print(type(recipes_limit))
+        print('obj:', obj)
+        return RecipeShortSerializer(
+            obj.recipes.all()[:recipes_limit], many=True
+        ).data
+
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ('recipes', 'recipe_count')        
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+
+    subscriber = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    author = serializers.HiddenField(default=URLParameter('user_id'))   
+
+    class Meta:
+        model = Subscription
+        fields = ('subscriber', 'author')
