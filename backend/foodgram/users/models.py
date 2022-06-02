@@ -28,12 +28,12 @@ class Subscription(models.Model):
     subscriber = models.ForeignKey(
         WebUser,
         on_delete=models.CASCADE,
-        related_name='subscribers'
+        related_name='subscriptions'
     )
     author = models.ForeignKey(
         WebUser,
         on_delete=models.CASCADE,
-        related_name='authors'
+        related_name='subscribers'
     )
 
     def __str__(self) -> str:
