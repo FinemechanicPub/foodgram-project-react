@@ -182,4 +182,4 @@ class SubscriptionsViewSet(viewsets.mixins.ListModelMixin,
     def get_queryset(self):
         return User.objects.filter(
             subscribers__subscriber=self.request.user
-        )
+        ).annotate(is_subscribed=Value(True, BooleanField()))
