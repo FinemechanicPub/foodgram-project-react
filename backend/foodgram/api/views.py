@@ -1,4 +1,4 @@
-from django.db.models import OuterRef, Exists, Value, BooleanField, Prefetch
+from django.db.models import OuterRef, Exists, Value, BooleanField, Prefetch, Count
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -179,7 +179,18 @@ class SubscriptionsViewSet(viewsets.mixins.ListModelMixin,
     serializer_class = UserRecipeSerializer
     pagination_class = RecipePagination
 
+    # def get_serializer_context(self):
+    #     context = super().get_serializer_context()
+    #     context.update({
+    #         recipes = Recipe.objects.filter()
+    #     })
+
     def get_queryset(self):
-        return User.objects.filter(
-            subscribers__subscriber=self.request.user
-        ).annotate(is_subscribed=Value(True, BooleanField()))
+        return (
+            User.objects.filter(
+                subscribers__subscriber=self.request.user
+            )
+            .annotate(is_subscribed=Value(True, BooleanField()))
+            .annotate(recipes_count=Count('recipes'))
+        )
+        

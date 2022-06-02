@@ -168,21 +168,18 @@ class FavoritesSerializer(RecipeListSerializer):
 class UserRecipeSerializer(UserSerializer):
     """Сериализатор пользователя и его рецептов"""
     recipes = serializers.SerializerMethodField(read_only=True)
-    recipe_count = serializers.IntegerField(read_only=True)
+    recipes_count = serializers.IntegerField(read_only=True)
 
     def get_recipes(self, obj):
         recipes_limit = int(
             self.context.get('request').query_params.get('recipes_limit', 0)
         )
-        print('Recipes limit:', recipes_limit)
-        print(type(recipes_limit))
-        print('obj:', obj)
         return RecipeShortSerializer(
             obj.recipes.all()[:recipes_limit], many=True
         ).data
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('recipes', 'recipe_count')        
+        fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count')        
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
