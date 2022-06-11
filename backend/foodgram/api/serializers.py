@@ -36,15 +36,15 @@ class CurrentRecipeDefault:
         )
      
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(djoser_serialziers.UserSerializer):
     """Сериализатор пользователя"""
     is_subscribed = serializers.BooleanField(read_only=True)
 
-    class Meta:
+    class Meta(djoser_serialziers.UserSerializer):
         model = User
         fields = (
-            'email', 'id', 'username',
-            'first_name', 'last_name', 'is_subscribed'
+            djoser_serialziers.UserSerializer.Meta.fields
+            + ('username', 'first_name', 'last_name', 'is_subscribed')
         )
         
 
