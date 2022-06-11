@@ -1,5 +1,6 @@
 from email.policy import default
 from django.contrib.auth import get_user_model
+from djoser import serializers as djoser_serialziers
 from rest_framework import serializers
 from recipes.models import Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
 from users.models import Subscription
@@ -46,6 +47,14 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'is_subscribed'
         )
         
+
+class UserCreateSerializer(djoser_serialziers.UserCreateSerializer):
+    """Сериализатор создания пользователя"""
+    class Meta(djoser_serialziers.UserCreateSerializer.Meta):
+        fields = (
+            djoser_serialziers.UserCreateSerializer.Meta.fields
+            + ('username', 'first_name', 'last_name')
+        )
 
 
 class TagSerializer(serializers.ModelSerializer):
