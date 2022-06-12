@@ -45,13 +45,18 @@ class Command(BaseCommand):
             headers = next(reader)
             for row in reader:                
                 params = dict(zip(headers, row))
+                # Handle user model
                 if hasattr(model.objects, 'create_user'):                    
                     model.objects.create_user(**params)
                     continue
+                # Handle other types of models
                 instance = model()
+                # Parse every column one by one
                 for key, value in params.items():
                     key_id = f'{key}_id'
+                    # The column is a foreign table reference
                     if hasattr(instance, key_id):
+                        # There are directions to add data to the foreign table
                         if key in related_models:
                             related_model, related_field_name = (
                                 related_models[key]
@@ -61,8 +66,11 @@ class Command(BaseCommand):
                                 .get_or_create(**{related_field_name: value})
                                 )
                             setattr(instance, key, related_object)
+                        # Foreign table should be already filled,
+                        # just  add reference
                         else:
                             setattr(instance, key_id, value)
+                    # The column is an ordinary data column
                     else:
                         setattr(instance, key, value)
                 instance.save()
