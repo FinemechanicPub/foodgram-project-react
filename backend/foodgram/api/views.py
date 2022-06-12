@@ -32,7 +32,6 @@ def is_subscribed_annotation(queryset, user):
         return queryset.annotate(is_subscribed=Value(False, BooleanField()))
 
 
-
 class TagViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
