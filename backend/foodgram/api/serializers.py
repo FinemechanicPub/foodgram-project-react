@@ -22,19 +22,7 @@ class URLParameter():
             serializer_field.context.get('request')
             .parser_context.get('kwargs').get(self.field_name)
         )
-
-
-class CurrentRecipeDefault:
-    """Значение по умолчания для рецепта, извлекаемое из URL"""
-    requires_context = True
-
-    def __call__(self, serializer_field):
-        print('Context: ', serializer_field.context)
-        return (
-            serializer_field.context.get('request')
-            .parser_context.get('kwargs').get('recipe_id')
-        )
-     
+  
 
 class UserSerializer(djoser_serialziers.UserSerializer):
     """Сериализатор пользователя"""
@@ -156,7 +144,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     """Базовый сериализатор добавления рецепта к списку рецептов"""
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    recipe = serializers.HiddenField(default=CurrentRecipeDefault())    
+    recipe = serializers.HiddenField(default=URLParameter('recipe_id'))    
     
     class Meta:
         fields = ('user', 'recipe')
