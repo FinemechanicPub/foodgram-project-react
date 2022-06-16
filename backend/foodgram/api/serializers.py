@@ -1,8 +1,9 @@
-from email.policy import default
 from django.contrib.auth import get_user_model
 from djoser import serializers as djoser_serialziers
 from rest_framework import serializers
-from recipes.models import Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
+from recipes.models import (
+    Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
+)
 from users.models import Subscription
 
 from .fields import DecodingImageField
@@ -17,12 +18,12 @@ class URLParameter():
     def __init__(self, field_name):
         self.field_name = field_name
 
-    def __call__(self, serializer_field):        
+    def __call__(self, serializer_field):
         return (
             serializer_field.context.get('request')
             .parser_context.get('kwargs').get(self.field_name)
         )
-  
+
 
 class UserSerializer(djoser_serialziers.UserSerializer):
     """Сериализатор пользователя"""
@@ -34,7 +35,7 @@ class UserSerializer(djoser_serialziers.UserSerializer):
             djoser_serialziers.UserSerializer.Meta.fields
             + ('username', 'first_name', 'last_name', 'is_subscribed')
         )
-        
+
 
 class UserCreateSerializer(djoser_serialziers.UserCreateSerializer):
     """Сериализатор создания пользователя"""
@@ -70,7 +71,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = ('ingredient', 'amount')
-    
+
     # При отображении запрашивать вложенный сериализатор
     # и дополнять ответ его данными без вложенности
     def to_representation(self, instance):
@@ -78,11 +79,11 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         representation = IngredientSerializer(instance.ingredient).data
         representation.update({'amount': instance.amount})
         return representation
-    
+
     # Приведение данных к форме модели
     def to_internal_value(self, data):
         """Генератор внутреннего представления с заменой имени поля"""
-        data['ingredient'] =  data.pop('id')
+        data['ingredient'] = data.pop('id')
         return super().to_internal_value(data)
 
 
@@ -102,7 +103,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     image = DecodingImageField()
     ingredients = RecipeIngredientSerializer(
         many=True,
-        source = 'recipe_to_ingredients'
+        source='recipe_to_ingredients'
     )
     is_in_shopping_cart = serializers.BooleanField(read_only=True)
     is_favorited = serializers.BooleanField(read_only=True)
@@ -113,14 +114,14 @@ class RecipeSerializer(serializers.ModelSerializer):
             'id', 'tags', 'author', 'is_in_shopping_cart', 'is_favorited',
             'ingredients', 'name', 'image', 'text', 'cooking_time'
         )
-    
+
     # При отображении запрашивать вложенный сериализатор тегов
     def to_representation(self, instance):
         """Генератор представления с развернутым отображением тегов"""
         representation = super().to_representation(instance)
         representation['tags'] = TagSerializer(instance.tags, many=True).data
         return representation
-    
+
     def create(self, validated_data):
         """Создание записи с обработкой вложенных данных по ингредиентам"""
         # print('Validated_data: ', validated_data)
@@ -129,7 +130,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         for item in recipe_items:
             recipe.recipe_to_ingredients.create(**item)
         return recipe
-    
+
     def update(self, instance, validated_data):
         """Обновление записи с обработкой вложенных данных по ингредиентам"""
         # print('Validated_data (update): ', validated_data)
@@ -144,8 +145,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     """Базовый сериализатор добавления рецепта к списку рецептов"""
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    recipe = serializers.HiddenField(default=URLParameter('recipe_id'))    
-    
+    recipe = serializers.HiddenField(default=URLParameter('recipe_id'))
+
     class Meta:
         fields = ('user', 'recipe')
 
@@ -160,7 +161,7 @@ class FavoritesSerializer(RecipeListSerializer):
     """"Сериализатор добавления рецепта к списку избранного"""
     class Meta(RecipeListSerializer.Meta):
         model = Favorite
-        
+
 
 class UserRecipeSerializer(UserSerializer):
     """Сериализатор пользователя и его рецептов"""
@@ -176,13 +177,15 @@ class UserRecipeSerializer(UserSerializer):
         ).data
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count')        
+        fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count')
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
 
-    subscriber = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    author = serializers.HiddenField(default=URLParameter('user_id'))   
+    subscriber = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    author = serializers.HiddenField(default=URLParameter('user_id'))
 
     class Meta:
         model = Subscription
