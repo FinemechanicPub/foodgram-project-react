@@ -1,18 +1,18 @@
 from django.db.models import OuterRef, Exists, Value, BooleanField, Prefetch, Count
 from django.contrib.auth import get_user_model
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from djoser.views import UserViewSet
-from requests import Response
 from rest_framework import viewsets, decorators, exceptions, response, status
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
-from recipes.services import ShoppingList
+from recipes.services import get_shopping_list
 from users.models import Subscription
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import RecipePagination
 from .serializers import FavoritesSerializer, IngredientSerializer, RecipeSerializer, RecipeShortSerializer, ShoppingCartSerialzier, SubscriptionSerializer, TagSerializer, UserRecipeSerializer
+from .services import render_txt
 
 
 User = get_user_model()
@@ -30,7 +30,6 @@ def is_subscribed_annotation(queryset, user):
         )
     else:
         return queryset.annotate(is_subscribed=Value(False, BooleanField()))
-
 
 
 class TagViewset(viewsets.ReadOnlyModelViewSet):
@@ -129,8 +128,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     
     @decorators.action(detail=False, methods=['GET'])
     def download_shopping_cart(self, request):
-        shopping_list = ShoppingList(request.user)
-        return FileResponse(shopping_list.as_txt('my_shopping_list'), as_attachment=True)
+        shopping_list = get_shopping_list(request.user)
+        return FileResponse(render_txt(
+            shopping_list, 'my_shopping_list'),
+            as_attachment=True,
+        )
         
 
 class WebUserViewSet(UserViewSet):

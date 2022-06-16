@@ -1,5 +1,6 @@
 from email.policy import default
 from django.contrib.auth import get_user_model
+from djoser import serializers as djoser_serialziers
 from rest_framework import serializers
 from recipes.models import Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
 from users.models import Subscription
@@ -21,31 +22,27 @@ class URLParameter():
             serializer_field.context.get('request')
             .parser_context.get('kwargs').get(self.field_name)
         )
+  
 
-
-class CurrentRecipeDefault:
-    """Значение по умолчания для рецепта, извлекаемое из URL"""
-    requires_context = True
-
-    def __call__(self, serializer_field):
-        print('Context: ', serializer_field.context)
-        return (
-            serializer_field.context.get('request')
-            .parser_context.get('kwargs').get('recipe_id')
-        )
-     
-
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(djoser_serialziers.UserSerializer):
     """Сериализатор пользователя"""
     is_subscribed = serializers.BooleanField(read_only=True)
 
-    class Meta:
+    class Meta(djoser_serialziers.UserSerializer):
         model = User
         fields = (
-            'email', 'id', 'username',
-            'first_name', 'last_name', 'is_subscribed'
+            djoser_serialziers.UserSerializer.Meta.fields
+            + ('username', 'first_name', 'last_name', 'is_subscribed')
         )
         
+
+class UserCreateSerializer(djoser_serialziers.UserCreateSerializer):
+    """Сериализатор создания пользователя"""
+    class Meta(djoser_serialziers.UserCreateSerializer.Meta):
+        fields = (
+            djoser_serialziers.UserCreateSerializer.Meta.fields
+            + ('username', 'first_name', 'last_name')
+        )
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -147,7 +144,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     """Базовый сериализатор добавления рецепта к списку рецептов"""
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    recipe = serializers.HiddenField(default=CurrentRecipeDefault())    
+    recipe = serializers.HiddenField(default=URLParameter('recipe_id'))    
     
     class Meta:
         fields = ('user', 'recipe')
