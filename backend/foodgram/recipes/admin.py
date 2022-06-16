@@ -29,6 +29,7 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit')
     search_fields = ('name',)
+    ordering = ('name',)
 
 
 @admin.register(Tag)
