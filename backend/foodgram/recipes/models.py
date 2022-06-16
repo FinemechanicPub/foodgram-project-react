@@ -81,11 +81,14 @@ class Recipe(models.Model):
         verbose_name='ингредиенты'
     )
     tags = models.ManyToManyField(Tag, verbose_name='теги')
+    created = models.DateTimeField(auto_now=True)
+    edited = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         default_related_name = 'recipes'
         verbose_name = 'рецепт'
         verbose_name_plural = 'рецепты'
+        ordering = ('-edited',)
 
     def __str__(self) -> str:
         return cut_text_display(self.name)
