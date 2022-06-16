@@ -1,3 +1,4 @@
+from tabnanny import verbose
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -28,13 +29,19 @@ class Subscription(models.Model):
     subscriber = models.ForeignKey(
         WebUser,
         on_delete=models.CASCADE,
-        related_name='subscriptions'
+        related_name='subscriptions',
+        verbose_name='подписчик'
     )
     author = models.ForeignKey(
         WebUser,
         on_delete=models.CASCADE,
-        related_name='subscribers'
+        related_name='subscribers',
+        verbose_name='автор'
     )
+
+    class Meta:
+        verbose_name = 'подписка'
+        verbose_name_plural = 'подписки'
 
     def __str__(self) -> str:
         return f'{self.subscriber} подписан на {self.author}'

@@ -116,14 +116,22 @@ class RecipeIngredient(models.Model):
     def __str__(self) -> str:
         return (
             f'"{self.ingredient}" входит в "{self.recipe}" '
-            f'в количестве {self.amount}'
+            f'в количестве {self.amount} {self.ingredient.measurement_unit}'
         )
 
 
 class RecipeList(models.Model):
     """Абстрактная модель списка рецептов пользователя"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        verbose_name='пользователь'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='рецепт'
+    )
 
     class Meta:
         abstract = True
@@ -132,6 +140,8 @@ class RecipeList(models.Model):
 class ShoppingCart(RecipeList):
     """Список покупок пользователя"""
     class Meta(RecipeList.Meta):
+        verbose_name = 'запись списка покупок'
+        verbose_name_plural = 'записи списка покупок'
         default_related_name = 'cart'
 
     def __str__(self) -> str:
@@ -141,6 +151,8 @@ class ShoppingCart(RecipeList):
 class Favorite(RecipeList):
     """Список покупок пользователя"""
     class Meta(RecipeList.Meta):
+        verbose_name = 'запись списка избранного'
+        verbose_name_plural = 'записи списка избранного'
         default_related_name = 'favorites'
 
     def __str__(self) -> str:
