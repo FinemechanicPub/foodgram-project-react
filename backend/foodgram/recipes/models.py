@@ -123,7 +123,7 @@ class RecipeIngredient(models.Model):
 class RecipeList(models.Model):
     """Абстрактная модель списка рецептов пользователя"""
     user = models.ForeignKey(
-        User, 
+        User,
         on_delete=models.CASCADE,
         verbose_name='пользователь'
     )
