@@ -89,10 +89,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def _recipe_list_action(self, request, pk, SerializerClass):
+    def _recipe_list_action(self, request, pk, serializer_class):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            list_serializer = SerializerClass(
+            list_serializer = serializer_class(
                 data=request.data,
                 context={'request': request}
             )
