@@ -1,4 +1,3 @@
-from tabnanny import verbose
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -42,6 +41,16 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = 'подписка'
         verbose_name_plural = 'подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['subscriber', 'author'],
+                name='unique_subscription'
+            ),
+            models.CheckConstraint(
+                check=~models.Q(subscriber=models.F('author')),
+                name='no_self_subscriptions'
+            )
+        ]
 
     def __str__(self) -> str:
         return f'{self.subscriber} подписан на {self.author}'

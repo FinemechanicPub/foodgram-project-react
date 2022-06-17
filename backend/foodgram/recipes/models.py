@@ -115,6 +115,12 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = 'ингредиент'
         verbose_name_plural = 'состав'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='no duplicated ingredient in recipe'
+            )
+        ]
 
     def __str__(self) -> str:
         return (
@@ -135,6 +141,12 @@ class RecipeList(models.Model):
         on_delete=models.CASCADE,
         verbose_name='рецепт'
     )
+    constraints = [
+        models.UniqueConstraint(
+            fields=['user', 'recipe'],
+            name='no duplicated recipe in list'
+        )
+    ]
 
     class Meta:
         abstract = True
