@@ -2,12 +2,14 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from djoser import serializers as djoser_serialziers
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
+
 from recipes.models import (
     Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
 )
 from users.models import Subscription
-
 from .fields import DecodingImageField
+from .validators import NotEqualValidator
 
 User = get_user_model()
 
@@ -156,12 +158,22 @@ class ShoppingCartSerialzier(RecipeListSerializer):
     """Сериализатор добавления рецепта к списку покупок"""
     class Meta(RecipeListSerializer.Meta):
         model = ShoppingCart
+        validators = (UniqueTogetherValidator(
+            queryset=ShoppingCart.objects.all(),
+            fields=('user', 'recipe'),
+            message='Этот рецепт уже есть в списке'
+        ))
 
 
 class FavoritesSerializer(RecipeListSerializer):
     """"Сериализатор добавления рецепта к списку избранного"""
     class Meta(RecipeListSerializer.Meta):
         model = Favorite
+        validators = (UniqueTogetherValidator(
+            queryset=Favorite.objects.all(),
+            fields=('user', 'recipe'),
+            message='Этот рецепт уже есть в списке'
+        ))
 
 
 class UserRecipeSerializer(UserSerializer):
@@ -191,3 +203,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ('subscriber', 'author')
+        validators = (UniqueTogetherValidator(
+            queryset=Subscription.objects.all(),
+            fields=('subscriber', 'author'),
+            message='Такая подписка уже существует.'
+        ), NotEqualValidator(
+            fields=('subscriber', 'author'),
+            message='Подписка на самого себя не допускается.'
+        ))
