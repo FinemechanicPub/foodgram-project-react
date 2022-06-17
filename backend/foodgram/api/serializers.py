@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from djoser import serializers as djoser_serialziers
 from rest_framework import serializers
 from recipes.models import (
@@ -122,6 +123,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         representation['tags'] = TagSerializer(instance.tags, many=True).data
         return representation
 
+    @transaction.atomic
     def create(self, validated_data):
         """Создание записи с обработкой вложенных данных по ингредиентам"""
         recipe_items = validated_data.pop('recipe_to_ingredients')
@@ -130,6 +132,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             recipe.recipe_to_ingredients.create(**item)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         """Обновление записи с обработкой вложенных данных по ингредиентам"""
         recipe_items = validated_data.pop('recipe_to_ingredients')
