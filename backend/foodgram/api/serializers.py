@@ -124,7 +124,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Создание записи с обработкой вложенных данных по ингредиентам"""
-        # print('Validated_data: ', validated_data)
         recipe_items = validated_data.pop('recipe_to_ingredients')
         recipe = super().create(validated_data)
         for item in recipe_items:
@@ -133,7 +132,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """Обновление записи с обработкой вложенных данных по ингредиентам"""
-        # print('Validated_data (update): ', validated_data)
         recipe_items = validated_data.pop('recipe_to_ingredients')
         instance = super().update(instance, validated_data)
         instance.recipe_to_ingredients.all().delete()
