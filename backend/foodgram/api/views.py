@@ -5,10 +5,9 @@ from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from djoser.views import UserViewSet
-from rest_framework import decorators, exceptions, response, status, viewsets
-
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from recipes.services import get_shopping_list
+from rest_framework import decorators, exceptions, response, status, viewsets
 from users.models import Subscription
 
 from .filters import IngredientFilter, RecipeFilter

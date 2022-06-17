@@ -1,11 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from djoser import serializers as djoser_serialziers
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import Subscription
 
 from .fields import DecodingImageField

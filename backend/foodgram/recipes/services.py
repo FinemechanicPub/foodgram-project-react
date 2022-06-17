@@ -1,5 +1,6 @@
 """Модуль обработки данных"""
-from django.db.models import Sum, F
+from django.db.models import F, Sum
+
 from .models import Recipe
 
 
