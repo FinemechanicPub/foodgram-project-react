@@ -4,10 +4,10 @@ from djoser import serializers as djoser_serialziers
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from recipes.models import (
-    Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
-)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 from users.models import Subscription
+
 from .fields import DecodingImageField
 from .validators import NotEqualValidator
 

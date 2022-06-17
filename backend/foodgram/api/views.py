@@ -1,25 +1,29 @@
-from django.db.models import OuterRef, Exists, Value, BooleanField, Prefetch, Count
 from django.contrib.auth import get_user_model
-from django.http import FileResponse, HttpResponse
+from django.db.models import (BooleanField, Count, Exists, OuterRef, Prefetch,
+                              Value)
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from djoser.views import UserViewSet
-from rest_framework import viewsets, decorators, exceptions, response, status
+from rest_framework import decorators, exceptions, response, status, viewsets
+
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from recipes.services import get_shopping_list
 from users.models import Subscription
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import RecipePagination
-from .serializers import FavoritesSerializer, IngredientSerializer, RecipeSerializer, RecipeShortSerializer, ShoppingCartSerialzier, SubscriptionSerializer, TagSerializer, UserRecipeSerializer
+from .serializers import (FavoritesSerializer, IngredientSerializer,
+                          RecipeSerializer, RecipeShortSerializer,
+                          ShoppingCartSerialzier, SubscriptionSerializer,
+                          TagSerializer, UserRecipeSerializer)
 from .services import render_txt
-
 
 User = get_user_model()
 
 
 def is_subscribed_annotation(queryset, user):
-    if user.is_authenticated:            
+    if user.is_authenticated:
         return queryset.annotate(
             is_subscribed=Exists(
                 Subscription.objects.filter(
@@ -111,21 +115,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
         raise exceptions.MethodNotAllowed(request.method)
 
     @decorators.action(detail=True, methods=['POST', 'DELETE'])
-    def shopping_cart(self, request, pk=None):        
+    def shopping_cart(self, request, pk=None):
         return self._recipe_list_action(
             request,
             pk,
             ShoppingCartSerialzier
         )
-    
+
     @decorators.action(detail=True, methods=['POST', 'DELETE'])
-    def favorite(self, request, pk=None):        
+    def favorite(self, request, pk=None):
         return self._recipe_list_action(
             request,
             pk,
             FavoritesSerializer
         )
-    
+
     @decorators.action(detail=False, methods=['GET'])
     def download_shopping_cart(self, request):
         shopping_list = get_shopping_list(request.user)
@@ -133,12 +137,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             shopping_list, 'my_shopping_list'),
             as_attachment=True,
         )
-        
+
 
 class WebUserViewSet(UserViewSet):
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:            
+        if self.request.user.is_authenticated:
             return super().get_queryset().annotate(
                 is_subscribed=Exists(
                     Subscription.objects.filter(
@@ -195,4 +199,3 @@ class SubscriptionsViewSet(viewsets.mixins.ListModelMixin,
             .annotate(is_subscribed=Value(True, BooleanField()))
             .annotate(recipes_count=Count('recipes'))
         )
-        

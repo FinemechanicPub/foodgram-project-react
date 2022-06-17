@@ -43,10 +43,10 @@ class Command(BaseCommand):
         ) as file:
             reader = csv.reader(file)
             headers = next(reader)
-            for row in reader:                
+            for row in reader:
                 params = dict(zip(headers, row))
                 # Handle user model
-                if hasattr(model.objects, 'create_user'):                    
+                if hasattr(model.objects, 'create_user'):
                     model.objects.create_user(**params)
                     continue
                 # Handle other types of models

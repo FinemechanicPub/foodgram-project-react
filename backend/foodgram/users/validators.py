@@ -1,4 +1,4 @@
-from django.core.validators import MaxValueValidator, RegexValidator
+from django.core.validators import RegexValidator
 
 
 def username_validator():
