@@ -158,22 +158,22 @@ class ShoppingCartSerialzier(RecipeListSerializer):
     """Сериализатор добавления рецепта к списку покупок"""
     class Meta(RecipeListSerializer.Meta):
         model = ShoppingCart
-        validators = (UniqueTogetherValidator(
+        validators = [UniqueTogetherValidator(
             queryset=ShoppingCart.objects.all(),
             fields=('user', 'recipe'),
             message='Этот рецепт уже есть в списке'
-        ))
+        )]
 
 
 class FavoritesSerializer(RecipeListSerializer):
     """"Сериализатор добавления рецепта к списку избранного"""
     class Meta(RecipeListSerializer.Meta):
         model = Favorite
-        validators = (UniqueTogetherValidator(
+        validators = [UniqueTogetherValidator(
             queryset=Favorite.objects.all(),
             fields=('user', 'recipe'),
             message='Этот рецепт уже есть в списке'
-        ))
+        )]
 
 
 class UserRecipeSerializer(UserSerializer):
@@ -203,11 +203,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ('subscriber', 'author')
-        validators = (UniqueTogetherValidator(
+        validators = [UniqueTogetherValidator(
             queryset=Subscription.objects.all(),
             fields=('subscriber', 'author'),
             message='Такая подписка уже существует.'
         ), NotEqualValidator(
             fields=('subscriber', 'author'),
             message='Подписка на самого себя не допускается.'
-        ))
+        )]
