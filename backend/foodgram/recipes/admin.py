@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings
 
 from .models import Favorite, Recipe, Ingredient, ShoppingCart, Tag, Unit
 
@@ -20,17 +21,29 @@ class IngredientInline(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author', 'cooking_time')
+    list_display = ('name', 'author', 'cooking_time', 'tag_list')
     fields = (
-        'name', 'author', 'cooking_time', 'text', 'favorited_count', 'image'
+        'name', 'author', 'cooking_time', 'text',
+        'favorited_count', 'image', 'tags'
     )
     readonly_fields = ('favorited_count',)
     inlines = (IngredientInline,)
+    search_fields = ('name', 'author__username', 'tags__name')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('tags')
 
     def favorited_count(self, recipe):
         return recipe.favorites.count()
 
+    def tag_list(self, recipe):
+        return ', '.join(
+            tag.name for tag in recipe.tags.all()
+            [:settings.RECIPES['MAX_TAGS']]
+        )
+
     favorited_count.short_description = 'в избранном'
+    tag_list.short_description = 'теги'
 
 
 @admin.register(Ingredient)

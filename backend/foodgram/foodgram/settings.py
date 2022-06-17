@@ -168,7 +168,8 @@ DJOSER = {
 }
 
 RECIPES = {
-    'TEXT_DISPLAY_LENGTH': 30
+    'TEXT_DISPLAY_LENGTH': 30,
+    'MAX_TAGS': 10
 }
 
 LOGGING = {
