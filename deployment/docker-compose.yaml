@@ -8,10 +8,10 @@ services:
     env_file:
       - ./.env
   web:
-    # image: averoesdock/foodgram
-    build:
-      context: ../backend/
-      dockerfile: ./Dockerfile
+    image: averoesdock/foodgram
+    # build:
+    #   context: ../backend/
+    #   dockerfile: ./Dockerfile
     restart: always
     volumes:
       - static_value:/app/static/
