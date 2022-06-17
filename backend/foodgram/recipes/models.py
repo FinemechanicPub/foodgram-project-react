@@ -100,7 +100,7 @@ class RecipeIngredient(models.Model):
         Recipe,
         related_name='recipe_to_ingredients',
         on_delete=models.CASCADE
-        )
+    )
     ingredient = models.ForeignKey(
         Ingredient,
         related_name='ingredient_to_recipes',

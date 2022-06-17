@@ -64,7 +64,7 @@ class Command(BaseCommand):
                             related_object, _ = (
                                 related_model.objects
                                 .get_or_create(**{related_field_name: value})
-                                )
+                            )
                             setattr(instance, key, related_object)
                         # Foreign table should be already filled,
                         # just  add reference
