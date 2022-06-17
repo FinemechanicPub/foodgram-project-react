@@ -21,7 +21,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.models import Model
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Tag
 
 CSV_DIR = os.path.join(settings.BASE_DIR, 'data/')
 
@@ -76,7 +76,8 @@ class Command(BaseCommand):
                 instance.save()
 
     MODELS = {
-        Ingredient: ('ingredients', {'measurement_unit': 'notation'})
+        Ingredient: ('ingredients', {'measurement_unit': 'notation'}),
+        Tag: ('tags', {})
     }
 
     @transaction.atomic
