@@ -61,15 +61,12 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         model = RecipeIngredient
         fields = ('ingredient', 'amount')
 
-    # При отображении запрашивать вложенный сериализатор
-    # и дополнять ответ его данными без вложенности
     def to_representation(self, instance):
         """Генератор представления с уплощением структуры ответа"""
         representation = IngredientSerializer(instance.ingredient).data
         representation.update({'amount': instance.amount})
         return representation
 
-    # Приведение данных к форме модели
     def to_internal_value(self, data):
         """Генератор внутреннего представления с заменой имени поля"""
         data['ingredient'] = data.pop('id')
@@ -104,7 +101,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             'ingredients', 'name', 'image', 'text', 'cooking_time'
         )
 
-    # При отображении запрашивать вложенный сериализатор тегов
     def to_representation(self, instance):
         """Генератор представления с развернутым отображением тегов"""
         representation = super().to_representation(instance)
