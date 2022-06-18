@@ -107,13 +107,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         representation['tags'] = TagSerializer(instance.tags, many=True).data
         return representation
 
+    def _add_ingredients(self, recipe_items, recipe):
+        """Добавление элементов к списку ингредментов рецепта"""
+        for item in recipe_items:
+            recipe.recipe_to_ingredients.create(**item)
+
     @transaction.atomic
     def create(self, validated_data):
         """Создание записи с обработкой вложенных данных по ингредиентам"""
         recipe_items = validated_data.pop('recipe_to_ingredients')
         recipe = super().create(validated_data)
-        for item in recipe_items:
-            recipe.recipe_to_ingredients.create(**item)
+        self._add_ingredients(recipe_items, recipe)
         return recipe
 
     @transaction.atomic
@@ -122,8 +126,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe_items = validated_data.pop('recipe_to_ingredients')
         instance = super().update(instance, validated_data)
         instance.recipe_to_ingredients.all().delete()
-        for item in recipe_items:
-            instance.recipe_to_ingredients.create(**item)
+        self._add_ingredients(recipe_items, instance)
         return instance
 
 
