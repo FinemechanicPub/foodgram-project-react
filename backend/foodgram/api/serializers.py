@@ -101,6 +101,15 @@ class RecipeSerializer(serializers.ModelSerializer):
             'ingredients', 'name', 'image', 'text', 'cooking_time'
         )
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        unique_ingredients = set(
+            item['ingredient'] for item in attrs['recipe_to_ingredients']
+        )
+        if len(unique_ingredients) != len(attrs):
+            raise serializers.ValidationError('Повторяющийся ингредиент')
+        return attrs
+
     def to_representation(self, instance):
         """Генератор представления с развернутым отображением тегов"""
         representation = super().to_representation(instance)
