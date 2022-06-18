@@ -20,7 +20,7 @@ from .serializers import (FavoritesSerializer, IngredientSerializer,
                           ShoppingCartSerialzier, SubscriptionSerializer,
                           TagSerializer, UserRecipeSerializer)
 from .services import render_txt
-from .utils import is_subscribed_annotation
+from .utils import is_subscribed_annotation, recipe_list
 
 User = get_user_model()
 
@@ -55,24 +55,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
 
+        user = self.request.user
         queryset = self.queryset.prefetch_related(Prefetch(
             'author',
-            is_subscribed_annotation(User.objects.all(), self.request.user)
+            is_subscribed_annotation(User.objects.all(), user)
         ))
-        if self.request.user.is_authenticated:
+        if user.is_authenticated:
             return queryset.annotate(
-                is_in_shopping_cart=Exists(
-                    ShoppingCart.objects.filter(
-                        recipe=OuterRef('pk'),
-                        user=self.request.user
-                    )
-                ),
-                is_favorited=Exists(
-                    Favorite.objects.filter(
-                        recipe=OuterRef('pk'),
-                        user=self.request.user
-                    )
-                )
+                is_in_shopping_cart=Exists(recipe_list(ShoppingCart, user)),
+                is_favorited=Exists(recipe_list(Favorite, user))
             )
         return queryset.annotate(
             is_in_shopping_cart=Value(0, BooleanField()),
@@ -99,7 +90,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 headers=headers
             )
         elif request.method == 'DELETE':
-            ShoppingCart.objects.filter(
+            serializer_class.Meta.model.objects.filter(
                 user=request.user,
                 recipe=recipe
             ).delete()

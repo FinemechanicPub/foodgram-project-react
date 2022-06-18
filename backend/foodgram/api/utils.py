@@ -19,7 +19,7 @@ class URLParameter():
 
 
 def is_subscribed_annotation(queryset, user):
-    """"Добавление признака подписки пользователя на автора рецепта"""
+    """Добавление признака подписки пользователя на автора рецепта"""
     if user.is_authenticated:
         return queryset.annotate(
             is_subscribed=Exists(
@@ -31,3 +31,8 @@ def is_subscribed_annotation(queryset, user):
         )
     else:
         return queryset.annotate(is_subscribed=Value(False, BooleanField()))
+
+
+def recipe_list(model, user):
+    """Подзапрос у моделей RecipeList списка для пользователя"""
+    return model.objects.filter(recipe=OuterRef('pk'), user=user)
