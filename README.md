@@ -42,7 +42,7 @@ python foodgram/manage.py createsuperuser
 Заполнение базы данных тестовыми записями (ингредиенты и теги)
 
 ```bash
-python foodgram/manage.py sampledata
+python foodgram/manage.py sample_data
 ```
 
 Для запуска сервера в отладочном режиме установите переменну среды `DJANGO_DEBUG`.
@@ -106,7 +106,7 @@ sudo docker compose exec web python manage.py createsuperuser
 Заполнение базы данных тестовыми записями (ингредиенты и теги)
 
 ```bash
-sudo docker compose exec web python manage.py sampledata
+sudo docker compose exec web python manage.py sample_data
 ```
 
 ## Документация
