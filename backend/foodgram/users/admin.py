@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
-from recipes.models import Favorite, ShoppingCart
 
+from recipes.models import Favorite, ShoppingCart
 from .models import Subscription, WebUser
 
 admin.site.unregister(Group)
