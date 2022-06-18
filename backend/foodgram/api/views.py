@@ -9,10 +9,11 @@ from rest_framework import decorators, exceptions, response, status, viewsets
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import Ingredient, Recipe, Tag
 from recipes.services import get_shopping_list
 from users.models import Subscription
-from .filters import IngredientFilter, RecipeFilter
+from .filters import (FavoritesFilter, IngredientFilter,
+                      RecipeFilter, ShoppingCartFilter)
 from .pagination import RecipePagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (FavoritesSerializer, IngredientSerializer,
@@ -20,7 +21,7 @@ from .serializers import (FavoritesSerializer, IngredientSerializer,
                           ShoppingCartSerialzier, SubscriptionSerializer,
                           TagSerializer, UserRecipeSerializer)
 from .services import render_txt
-from .utils import is_subscribed_annotation, recipe_list
+from .utils import is_subscribed_annotation
 
 User = get_user_model()
 
@@ -62,8 +63,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ))
         if user.is_authenticated:
             return queryset.annotate(
-                is_in_shopping_cart=Exists(recipe_list(ShoppingCart, user)),
-                is_favorited=Exists(recipe_list(Favorite, user))
+                is_in_shopping_cart=Exists(
+                    ShoppingCartFilter(request=self.request).qs
+                ),
+                is_favorited=Exists(
+                    FavoritesFilter(request=self.request).qs
+                )
             )
         return queryset.annotate(
             is_in_shopping_cart=Value(0, BooleanField()),

@@ -1,13 +1,11 @@
+from django.db.models import OuterRef
 from django_filters import rest_framework as filter
 
-from recipes.models import Ingredient, Recipe, Tag
+from recipes.models import Favorite, ShoppingCart, Tag
 
 
 class IngredientFilter(filter.FilterSet):
     name = filter.CharFilter(lookup_expr='istartswith')
-
-    class Meta:
-        Model = Ingredient
 
 
 class RecipeFilter(filter.FilterSet):
@@ -21,5 +19,22 @@ class RecipeFilter(filter.FilterSet):
         field_name='tags__slug'
     )
 
+
+class RecipeListFilter(filter.FilterSet):
+
+    @property
+    def qs(self):
+        parent = super().qs
+        return parent.filter(recipe=OuterRef('pk'), user=self.request.user)
+
+
+class ShoppingCartFilter(RecipeListFilter):
     class Meta:
-        Model = Recipe
+        model = ShoppingCart
+        fields = []
+
+
+class FavoritesFilter(RecipeListFilter):
+    class Meta:
+        model = Favorite
+        fields = []
