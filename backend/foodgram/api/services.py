@@ -2,8 +2,7 @@ from django.core.files.base import ContentFile
 
 LIST_ITEM = '- {name}: {amount} {unit}'
 LIST = """
-           Ваш список покупок
-
+           Ваш список покупок\r\n
 {ingredients}
 """
 
