@@ -140,12 +140,6 @@ class RecipeList(models.Model):
 
     class Meta:
         abstract = True
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name='no duplicated recipe in list'
-            )
-        ]
 
 
 class ShoppingCart(RecipeList):
@@ -154,6 +148,12 @@ class ShoppingCart(RecipeList):
         verbose_name = 'запись списка покупок'
         verbose_name_plural = 'записи списка покупок'
         default_related_name = 'cart'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='no duplicated recipe in ShoppingCart list'
+            )
+        ]
 
     def __str__(self) -> str:
         return f'{self.recipe} в корзине у {self.user}'
@@ -165,6 +165,12 @@ class Favorite(RecipeList):
         verbose_name = 'запись списка избранного'
         verbose_name_plural = 'записи списка избранного'
         default_related_name = 'favorites'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='no duplicated recipe in Favorite list'
+            )
+        ]
 
     def __str__(self) -> str:
         return f'{self.recipe} в избранном у {self.user}'
