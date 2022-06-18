@@ -9,22 +9,9 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
 from users.models import Subscription
 from .fields import DecodingImageField
 from .validators import NotEqualValidator
+from .utils import URLParameter
 
 User = get_user_model()
-
-
-class URLParameter():
-    """Значение по умолчанию из параметров URL"""
-    requires_context = True
-
-    def __init__(self, field_name):
-        self.field_name = field_name
-
-    def __call__(self, serializer_field):
-        return (
-            serializer_field.context.get('request')
-            .parser_context.get('kwargs').get(self.field_name)
-        )
 
 
 class UserSerializer(djoser_serialziers.UserSerializer):
