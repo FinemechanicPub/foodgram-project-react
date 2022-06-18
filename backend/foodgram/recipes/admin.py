@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import Favorite, Ingredient, Recipe, ShoppingCart, Tag, Unit
 
 
-class IngredientInline(admin.StackedInline):
+class IngredientInline(admin.TabularInline):
     """Вложенная форма ингредиентов рецепта"""
     model = Recipe.ingredients.through
     fields = ('ingredient', 'amount',)
