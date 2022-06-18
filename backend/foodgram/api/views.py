@@ -144,7 +144,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
     @decorators.action(
-        detail=True,
+        detail=False,
         methods=['GET'],
         permission_classes=(IsAuthenticated,)
     )
