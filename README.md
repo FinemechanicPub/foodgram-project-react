@@ -13,7 +13,7 @@
 sudo docker compose up -d
 ```
 
-Будет произвелена сборка кода Frontend и запуск сервера Nginx, настроенного на работу с отладочным сервером Django.
+Будет произведена сборка кода Frontend и запуск сервера Nginx, настроенного на работу с отладочным сервером Django.
 
 Перейдите в папку `backend` и выполните команды:
 
@@ -85,7 +85,7 @@ sudo docker compose up -d
 
 ## Настройка проекта в рабочем режиме
 
-Создание базы данных для Djnago
+Создание базы данных для Django
 
 ```bash
 sudo docker compose exec web python manage.py migrate
