@@ -31,7 +31,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def tag_list(self, recipe):
         return ', '.join(
-            tag.name for tag in recipe.tags.all()
+            recipe.tags.values_list('name', flat=True)
             [:settings.RECIPES['MAX_TAGS']]
         )
 
