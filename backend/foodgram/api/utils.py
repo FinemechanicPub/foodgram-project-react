@@ -1,4 +1,7 @@
-"""Вспомогательные классы"""
+"""Вспомогательные классы и функции"""
+from django.db.models import BooleanField, Exists, OuterRef, Value
+
+from users.models import Subscription
 
 
 class URLParameter():
@@ -13,3 +16,18 @@ class URLParameter():
             serializer_field.context.get('request')
             .parser_context.get('kwargs').get(self.field_name)
         )
+
+
+def is_subscribed_annotation(queryset, user):
+    """"Добавление признака подписки пользователя на автора рецепта"""
+    if user.is_authenticated:
+        return queryset.annotate(
+            is_subscribed=Exists(
+                Subscription.objects.filter(
+                    subscriber=user,
+                    author=OuterRef('pk')
+                )
+            )
+        )
+    else:
+        return queryset.annotate(is_subscribed=Value(False, BooleanField()))

@@ -20,22 +20,9 @@ from .serializers import (FavoritesSerializer, IngredientSerializer,
                           ShoppingCartSerialzier, SubscriptionSerializer,
                           TagSerializer, UserRecipeSerializer)
 from .services import render_txt
+from .utils import is_subscribed_annotation
 
 User = get_user_model()
-
-
-def is_subscribed_annotation(queryset, user):
-    if user.is_authenticated:
-        return queryset.annotate(
-            is_subscribed=Exists(
-                Subscription.objects.filter(
-                    subscriber=user,
-                    author=OuterRef('pk')
-                )
-            )
-        )
-    else:
-        return queryset.annotate(is_subscribed=Value(False, BooleanField()))
 
 
 class TagViewset(viewsets.ReadOnlyModelViewSet):
