@@ -131,4 +131,5 @@ sudo docker compose exec web python manage.py sampledata
 ![Website](https://img.shields.io/website?down_color=lightgrey&down_message=%D0%BD%D0%B5%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82&label=%D1%81%D0%B0%D0%B9%D1%82&up_color=blue&up_message=%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82&url=http%3A%2F%2Ffinemechanic.hopto.org%2Fredoc%2F)
 
 [http://finemechanic.hopto.org/](http://finemechanic.hopto.org/)
+
 [http://finemechanic.hopto.org/api/docs/](http://finemechanic.hopto.org/api/docs/)
