@@ -3,21 +3,73 @@
 
 Поиск и публикация рецептов.
 
-## Установка
+## Компиляция кода Frontend и запуск в режиме отладки
+
+Этот способ используется, если требуется изменять код Frontend или Backend.
+
+Перейдите в папку `infra` и выполните команду 
+
+```bash
+sudo docker compose up -d
+```
+
+Будет произвелена сборка кода Frontend и запуск сервера Nginx, настроенного на работу с отладочным сервером Django.
+
+Перейдите в папку `backend` и выполните команды:
+
+Создание и активация окружения
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+Установка зависимостей
+```bash
+pip install -r requirements.txt
+```
+
+Создание базы данных для Djnago
+
+```bash
+python foodgram/manage.py migrate
+```
+
+Создание администратора Django
+
+```bash
+python foodgram/manage.py createsuperuser
+```
+
+Заполнение базы данных тестовыми записями (ингредиенты и теги)
+
+```bash
+python foodgram/manage.py sampledata
+```
+
+Для запуска сервера в отладочном режиме установите переменну среды `DJANGO_DEBUG`.
+
+Сервер запускается командой
+
+```bash
+python foodgram/manage.py runserver
+```
+
+## Установка в рабочем режиме
 
 Проект предполагает запуск в контейнере.
 
-Внутри папки infra необходимо создать файл ".env" для настройки переменных окружения в контейнере.
+Внутри папки deployment необходимо создать файл ".env" для настройки переменных окружения в контейнере.
 
+- `DB_ENGINE` - система управления базами данных
 - `POSTGRES_DB` - имя создаваемой базы данных
 - `POSTGRES_USER` - имя пользователя базы данных
 - `POSTGRES_PASSWORD` - пароль пользователя базы данных
 - `DJANGO_SECRET` - настройка кода SECRET_KEY в Django
 - `ALLOWED_HOSTS` - разрешенные адреса подключения к Django
 
-Пример файла [.env](/infra/.env.sample)
+Пример файла [.env](/deployment/.env.sample)
 
 ```
+DB_ENGINE=django.db.backends.postgresql
 POSTGRES_DB=postgres
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=12345678
@@ -31,7 +83,7 @@ ALLOWED_HOSTS=127.0.0.1,10.0.0.1
 sudo docker compose up -d
 ```
 
-## Настройка проекта
+## Настройка проекта в рабочем режиме
 
 Создание базы данных для Djnago
 
@@ -51,7 +103,7 @@ sudo docker compose exec web python manage.py collectstatic
 sudo docker compose exec web python manage.py createsuperuser
 ```
 
-Заполнение базы данных тестовыми записями
+Заполнение базы данных тестовыми записями (ингредиенты и теги)
 
 ```bash
 sudo docker compose exec web python manage.py sampledata
@@ -59,7 +111,7 @@ sudo docker compose exec web python manage.py sampledata
 
 ## Документация
 
-После запуска приложения документация API доступна по адресу [http://127.0.0.1/redoc/](http://127.0.0.1/redoc/)
+После запуска приложения документация API доступна по адресу [http://127.0.0.1/api/docs/](http://127.0.0.1/api/docs/)
 
 ## Технологии
 
@@ -74,10 +126,9 @@ sudo docker compose exec web python manage.py sampledata
 
 Проект разработан 
 - [Александр Рубцов](https://github.com/FinemechanicPub)
-- [Анастасия Дементьева](https://github.com/Nastasia153)
-- [Виталий Насретдинов](https://github.com/nasretdinovs)
 
 ## Демонстрация
 ![Website](https://img.shields.io/website?down_color=lightgrey&down_message=%D0%BD%D0%B5%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82&label=%D1%81%D0%B0%D0%B9%D1%82&up_color=blue&up_message=%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82&url=http%3A%2F%2Ffinemechanic.hopto.org%2Fredoc%2F)
 
-[http://finemechanic.hopto.org/redoc/](http://finemechanic.hopto.org/redoc/)
+[http://finemechanic.hopto.org/](http://finemechanic.hopto.org/)
+[http://finemechanic.hopto.org/api/docs/](http://finemechanic.hopto.org/api/docs/)
