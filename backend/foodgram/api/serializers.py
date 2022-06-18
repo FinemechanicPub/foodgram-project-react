@@ -102,7 +102,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        attrs = super().validate(attrs)
         unique_ingredients = set(
             item['ingredient'] for item in attrs['recipe_to_ingredients']
         )
