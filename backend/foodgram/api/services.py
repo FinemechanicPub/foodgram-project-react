@@ -9,7 +9,7 @@ LIST = """
 
 
 def render_txt(shopping_list: list, filename: str):
-    ingredient_text = '\n'.join(
+    ingredient_text = '\r\n'.join(
         LIST_ITEM.format(
             name=item['ingredient_name'],
             unit=item['unit'],
