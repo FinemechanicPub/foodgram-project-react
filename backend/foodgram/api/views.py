@@ -205,7 +205,7 @@ class SubscriptionsViewSet(viewsets.mixins.ListModelMixin,
                            viewsets.GenericViewSet):
     serializer_class = UserRecipeSerializer
     pagination_class = RecipePagination
-    permission_classes = IsAuthenticated
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return (
