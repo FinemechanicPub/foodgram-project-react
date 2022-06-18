@@ -1,14 +1,10 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from .utils import cut_text_display
+
 User = get_user_model()
-
-
-def cut_text_display(text):
-    """Обрезание текста при выводе на экран"""
-    return text[:settings.RECIPES['TEXT_DISPLAY_LENGTH']]
 
 
 class Unit(models.Model):
@@ -141,15 +137,15 @@ class RecipeList(models.Model):
         on_delete=models.CASCADE,
         verbose_name='рецепт'
     )
-    constraints = [
-        models.UniqueConstraint(
-            fields=['user', 'recipe'],
-            name='no duplicated recipe in list'
-        )
-    ]
 
     class Meta:
         abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='no duplicated recipe in list'
+            )
+        ]
 
 
 class ShoppingCart(RecipeList):
