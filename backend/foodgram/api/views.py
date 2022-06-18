@@ -8,10 +8,13 @@ from djoser.views import UserViewSet
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from recipes.services import get_shopping_list
 from rest_framework import decorators, exceptions, response, status, viewsets
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from users.models import Subscription
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import RecipePagination
+from .permissions import IsAuthorOrReadOnly
 from .serializers import (FavoritesSerializer, IngredientSerializer,
                           RecipeSerializer, RecipeShortSerializer,
                           ShoppingCartSerialzier, SubscriptionSerializer,
@@ -59,6 +62,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = RecipePagination
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    permission_classes = (
+        IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
+    )
 
     def get_queryset(self):
 
@@ -113,7 +119,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return response.Response(status=status.HTTP_204_NO_CONTENT)
         raise exceptions.MethodNotAllowed(request.method)
 
-    @decorators.action(detail=True, methods=['POST', 'DELETE'])
+    @decorators.action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
+    )
     def shopping_cart(self, request, pk=None):
         return self._recipe_list_action(
             request,
@@ -121,7 +131,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ShoppingCartSerialzier
         )
 
-    @decorators.action(detail=True, methods=['POST', 'DELETE'])
+    @decorators.action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
+    )
     def favorite(self, request, pk=None):
         return self._recipe_list_action(
             request,
@@ -129,7 +143,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             FavoritesSerializer
         )
 
-    @decorators.action(detail=False, methods=['GET'])
+    @decorators.action(
+        detail=True,
+        methods=['GET'],
+        permission_classes=(IsAuthenticated,)
+    )
     def download_shopping_cart(self, request):
         shopping_list = get_shopping_list(request.user)
         return FileResponse(render_txt(
@@ -155,7 +173,11 @@ class WebUserViewSet(UserViewSet):
                 is_subscribed=Value(False, BooleanField())
             )
 
-    @decorators.action(detail=True, methods=['POST', 'DELETE'])
+    @decorators.action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
+    )
     def subscribe(self, request, id=None):
         user = get_object_or_404(User, pk=id)
         if request.method == 'POST':
@@ -183,12 +205,7 @@ class SubscriptionsViewSet(viewsets.mixins.ListModelMixin,
                            viewsets.GenericViewSet):
     serializer_class = UserRecipeSerializer
     pagination_class = RecipePagination
-
-    # def get_serializer_context(self):
-    #     context = super().get_serializer_context()
-    #     context.update({
-    #         recipes = Recipe.objects.filter()
-    #     })
+    permission_classes = IsAuthenticated
 
     def get_queryset(self):
         return (
