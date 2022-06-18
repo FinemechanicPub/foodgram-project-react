@@ -4,19 +4,12 @@ from django.contrib import admin
 from .models import Favorite, Ingredient, Recipe, ShoppingCart, Tag, Unit
 
 
-class IngredientInline(admin.TabularInline):
+class IngredientInline(admin.StackedInline):
     """Вложенная форма ингредиентов рецепта"""
     model = Recipe.ingredients.through
     fields = ('ingredient', 'amount',)
+    readonly_fields = ('ingredient',)
     extra = 0
-
-    def get_formset(self, request, obj=None, **kwargs):
-        formset = super().get_formset(request, obj, **kwargs)
-        formset.form.base_fields['ingredient'].queryset = (
-            formset.form.base_fields['ingredient']
-            .queryset.select_related('measurement_unit')
-        )
-        return formset
 
 
 @admin.register(Recipe)
