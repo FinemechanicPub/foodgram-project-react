@@ -8,8 +8,18 @@ class IngredientInline(admin.TabularInline):
     """Вложенная форма ингредиентов рецепта"""
     model = Recipe.ingredients.through
     fields = ('ingredient', 'amount',)
-    readonly_fields = ('ingredient',)
     extra = 0
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return False
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['ingredient'].queryset = (
+            formset.form.base_fields['ingredient']
+            .queryset.select_related('measurement_unit')
+        )
+        return formset
 
 
 @admin.register(Recipe)
