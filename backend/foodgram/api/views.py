@@ -12,8 +12,8 @@ from rest_framework.permissions import (IsAuthenticated,
 from recipes.models import Ingredient, Recipe, Tag
 from recipes.services import get_shopping_list
 from users.models import Subscription
-from .filters import (FavoritesFilter, IngredientFilter,
-                      RecipeFilter, ShoppingCartFilter)
+from .filters import (FavoritesFilter, IngredientFilter, RecipeFilter,
+                      ShoppingCartFilter)
 from .pagination import RecipePagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (FavoritesSerializer, IngredientSerializer,

@@ -21,6 +21,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.models import Model
+
 from recipes.models import Ingredient, Tag
 
 CSV_DIR = os.path.join(settings.BASE_DIR, 'data/')
