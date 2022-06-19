@@ -105,7 +105,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         unique_ingredients = set(
             item['ingredient'] for item in attrs['recipe_to_ingredients']
         )
-        if len(unique_ingredients) != len(attrs):
+        if len(unique_ingredients) != len(attrs['recipe_to_ingredients']):
             raise serializers.ValidationError('Повторяющийся ингредиент')
         return attrs
 
