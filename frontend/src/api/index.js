@@ -21,7 +21,16 @@ class Api {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = "shopping-list";
+          const content_disposition = res.headers.get("Content-Disposition")
+          let filename = ""
+          if (content_disposition && content_disposition.indexOf('attachment') !== -1) {
+            let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            let matches = filenameRegex.exec(content_disposition);
+            if (matches != null && matches[1]) { 
+              filename = matches[1].replace(/['"]/g, '');
+            }
+          }
+          a.download = filename;
           document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
           a.click();    
           a.remove();  //afterwards we remove the element again 
